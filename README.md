@@ -19,5 +19,5 @@ Yeni Bautista, Fiona Chang, Tesneem Essa, Amaya Mangual, and Angela Zhang
 
 ### Credit to:
 #### [Next.js](https://nextjs.org/)
-#### [ffmpef.wasm](https://ffmpegwasm.netlify.app/)
+#### [ffmpeg.wasm](https://ffmpegwasm.netlify.app/)
 #### [Video Trimmer Example](https://github.com/ifeoma-imoh/Video-Trimming-App-Using-ffmpeg.wasm/tree/main)
