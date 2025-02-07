@@ -1,0 +1,247 @@
+"use client"
+import { useState,  } from 'react';           //components?
+import { useRouter } from 'next/router';    //nav
+import { createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg";
+import VideoPicker from './VideoPicker'
+import Download from './Download'
+import Range from './Range'
+import React from 'react'
+function TrimVideo(){
+    const handleChange = async (e) => {
+        let file = e.target.files[0];
+        console.log(file);
+        setInputVideoFile(file);
+    
+        setURL(await readFileAsBase64(file));
+      };
+    const readFileAsBase64 = async (file) => {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            resolve(reader.result);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      };
+      
+      const download = (url) => {
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "");
+        link.click();
+      };
+    const toTimeString = (sec, showMilliSeconds = true) => {
+        sec = parseFloat(sec);
+        let hours = Math.floor(sec / 3600); // get hours
+        let minutes = Math.floor((sec - hours * 3600) / 60); // get minutes
+        let seconds = sec - hours * 3600 - minutes * 60; //  get seconds
+        // add 0 if value < 10; Example: 2 => 02
+        if (hours < 10) {
+          hours = "0" + hours;
+        }
+        if (minutes < 10) {
+          minutes = "0" + minutes;
+        }
+        if (seconds < 10) {
+          seconds = "0" + seconds;
+        }
+        let maltissaRegex = /\..*$/; // matches the decimal point and the digits after it e.g if the number is 4.567 it matches .567
+      
+        let millisec = String(seconds).match(maltissaRegex);
+        return (
+          hours +
+          ":" +
+          minutes +
+          ":" +
+          String(seconds).replace(maltissaRegex, "") +
+          (showMilliSeconds ? (millisec ? millisec[0] : ".000") : "")
+        );
+      };
+    const ffmpeg = createFFmpeg({
+        // log: true,
+        corePath: "https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js"
+      });  //creates ffmpeg instance
+      
+      (async function () {
+        await ffmpeg.load();  //loads ffmpeg
+      })();
+    const [inputVideoFile, setInputVideoFile] = useState(null);
+    // let inputVideoFile= './cat.mp4'
+    const [trimmedVideoFile, setTrimmedVideoFile] = useState(null);
+    // const ref = useRef();
+    const [videoMeta, setVideoMeta] = useState(null);
+    const [URL, setURL] = useState([]);
+    const [trimIsProcessing, setTrimIsProcessing] = useState(false);
+  
+    const [rStart, setRstart] = useState(0);
+    const [rEnd, setRend] = useState(10);
+    const [thumbNails, setThumbNails] = useState([]);
+    const [thumbnailIsProcessing, setThumbnailIsProcessing] = useState(false);
+
+    const handleLoadedData = async (e) => {
+        // console.dir(ref.current);
+    
+        const el = e.target;
+    
+        const meta = {
+          name: inputVideoFile.name,
+          duration: el.duration,
+          videoWidth: el.videoWidth,
+          videoHeight: el.videoHeight
+        };
+        console.log({ meta });
+        setVideoMeta(meta);
+        const thumbNails = await getThumbnails(meta);
+        setThumbNails(thumbNails);
+      };
+
+      const getThumbnails = async ({ duration }) => {
+        if (!ffmpeg.isLoaded()) await ffmpeg.load();
+        setThumbnailIsProcessing(true);
+        let MAX_NUMBER_OF_IMAGES = 15;
+        let NUMBER_OF_IMAGES = duration < MAX_NUMBER_OF_IMAGES ? duration : 15;
+        let offset =
+          duration === MAX_NUMBER_OF_IMAGES ? 1 : duration / NUMBER_OF_IMAGES;
+    
+        const arrayOfImageURIs = [];
+        ffmpeg.FS("writeFile", inputVideoFile.name, await fetchFile(inputVideoFile));
+    
+        for (let i = 0; i < NUMBER_OF_IMAGES; i++) {
+          let startTimeInSecs = toTimeString(Math.round(i * offset));
+    
+          try {
+            await ffmpeg.run(
+              "-ss",
+              startTimeInSecs,
+              "-i",
+              inputVideoFile.name,
+              "-t",
+              "00:00:1.000",
+              "-vf",
+              `scale=150:-1`,
+              `img${i}.png`
+            );
+            const data = ffmpeg.FS("readFile", `img${i}.png`);
+    
+            let blob = new Blob([data.buffer], { type: "image/png" });
+            let dataURI = await readFileAsBase64(blob);
+            ffmpeg.FS("unlink", `img${i}.png`);
+            arrayOfImageURIs.push(dataURI);
+          } catch (error) {
+            console.log({ message: error });
+          }
+        }
+        setThumbnailIsProcessing(false);
+    
+        return arrayOfImageURIs;
+      };
+      const handleTrim = async () => {
+        setTrimIsProcessing(true);
+    
+        let startTime = ((rStart / 100) * videoMeta.duration).toFixed(2);
+        let offset = ((rEnd / 100) * videoMeta.duration - startTime).toFixed(2);
+        console.log(
+          startTime,
+          offset,
+          toTimeString(startTime),
+        toTimeString(offset)
+        );
+    
+        try {
+          ffmpeg.FS("writeFile", inputVideoFile.name, await fetchFile(inputVideoFile));
+          // await FF.run('-ss', '00:00:13.000', '-i', inputVideoFile.name, '-t', '00:00:5.000', 'ping.mp4');
+          await ffmpeg.run(
+            "-ss",
+          toTimeString(startTime),
+            "-i",
+            inputVideoFile.name,
+            "-t",
+          toTimeString(offset),
+            "-c",
+            "copy",
+            "ping.mp4"
+          );
+    
+          const data = ffmpeg.FS("readFile", "ping.mp4");
+          console.log(data);
+          const dataURL = await readFileAsBase64(
+            new Blob([data.buffer], { type: "video/mp4" })
+          );
+    
+          setTrimmedVideoFile(dataURL);
+        } catch (error) {
+          console.log(error);
+        } finally {
+          setTrimIsProcessing(false);
+        }
+      };
+    
+      const handleUpdateRange = (func) => {
+        return ({ target: { value } }) => {
+          func(value);
+        };
+      };
+      return (
+        <main className="App">
+          {
+            <>
+              <Range
+                rEnd={rEnd}
+                rStart={rStart}
+                handleUpdaterStart={handleUpdateRange(setRstart)}
+                handleUpdaterEnd={handleUpdateRange(setRend)}
+                loading={thumbnailIsProcessing}
+                videoMeta={videoMeta}
+                control={
+                  <div className="u-center">
+                    <button
+                      onClick={handleTrim}
+                      className="btn btn_b"
+                      disabled={trimIsProcessing}
+                    >
+                      {trimIsProcessing ? "trimming..." : "trim selected"}
+                    </button>
+                  </div>
+                }
+                thumbNails={thumbNails}
+              />
+            </>
+          }
+          <section className="deck">
+            <article className="grid_txt_2">
+              <VideoPicker
+                handleChange={handleChange}
+                showVideo={!!inputVideoFile}
+              >
+                <div className="bord_g_2 p_2">
+                  <video
+                    src={inputVideoFile ? URL : null}
+                    autoPlay
+                    controls
+                    muted
+                    onLoadedMetadata={handleLoadedData}
+                    width="450"
+                  ></video>
+                </div>
+              </VideoPicker>
+            </article>
+            <Download
+              videoSrc={trimmedVideoFile}
+              handleDownload={() => download(trimmedVideoFile)}
+            />
+          </section>
+        </main>
+      );
+
+}
+ 
+export default TrimVideo;
+export async function getServerSideProps(context) {
+    context.res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+    context.res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+  
+    return {
+      props: {},
+    };
+  }
