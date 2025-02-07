@@ -11,5 +11,6 @@ Sprintern 2025 Project
 
 
 ### Credit to:
-#### [ffmpef.wasm doc](https://ffmpegwasm.netlify.app/)
+#### [Next.js](https://nextjs.org/)
+#### [ffmpef.wasm](https://ffmpegwasm.netlify.app/)
 #### [Video Trimmer Example](https://github.com/ifeoma-imoh/Video-Trimming-App-Using-ffmpeg.wasm/tree/main)
