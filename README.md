@@ -1,5 +1,7 @@
 # sprintern-2025-video-trimmer
 Sprintern 2025 Project 
+## Team Members: 
+Yeni Bautista, Fiona Chang, Tesneem Essa, Amaya Mangual, and Angela Zhang, 
 ## Video Clipping App with 3 Modes:
 #### 30-Sec clips
 #### Slider-Based Trimming
