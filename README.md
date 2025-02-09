@@ -12,10 +12,32 @@ Yeni Bautista, Fiona Chang, Tesneem Essa, Amaya Mangual, and Angela Zhang
 ### Demo
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/272fk5UuuPA/0.jpg)](https://www.youtube.com/watch?v=272fk5UuuPA)
 
-## How to Run App:
-#### Make sure node version is 18.18+ 
-#### cd video_clipper_app
-#### npm run dev
+## Set up
+1. Must have [node](https://nodejs.org/en/download) version 18.18+ installed    
+2. Navigate to desired library
+```
+  cd your_directory
+```
+3. Clone repository
+```
+  git clone https://github.com/TesneemE/sprintern-2025-video-trimmer.git
+```
+4. Navigate to repo
+```
+ cd sprintern-2025-video-trimmer
+```
+5. Navigate to app
+```
+ cd video_clipper_app
+```
+6. Install the dependencies
+```
+ npm install
+```
+7. Run the app
+ ```
+ npm run dev
+ ```
 
 ### Credit to:
 #### [Next.js](https://nextjs.org/)
