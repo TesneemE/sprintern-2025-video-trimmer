@@ -1,5 +1,8 @@
 # sprintern-2025-video-trimmer
 Sprintern 2025 Project 
+
+## [Live App](https://sprintern-2025-video-trimmer-hqdn.vercel.app/)
+
 ## Team Members: 
 Yeni Bautista, Fiona Chang, Tesneem Essa, Amaya Mangual, and Angela Zhang
 
