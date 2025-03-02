@@ -9,19 +9,36 @@ const ffmpeg = createFFmpeg({
 
 function App() {
 
-  const ffmpeg = createFFmpeg({
-    corePath: "https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js"
-  });  //creates ffmpeg instance
+  // const ffmpeg = createFFmpeg({
+  //   corePath: "https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js"
+  // });  //creates ffmpeg instance
+
+  // useEffect(() => {
+  //   const loadFFmpeg = async () => {
+  //     if (!ffmpeg.isLoaded()) {
+  //       await ffmpeg.load();
+  //     }
+  //   };
+  //   loadFFmpeg();
+  // }, []);
+  useEffect(() => {
+  if (videoMeta.duration !== undefined) {
+    console.log("Duration is available:", videoMeta.duration);
+  }
+}, [videoMeta.duration]); // Runs only when duration exists
 
   useEffect(() => {
-    const loadFFmpeg = async () => {
-      if (!ffmpeg.isLoaded()) {
-        await ffmpeg.load();
-      }
-    };
-    loadFFmpeg();
-  }, []);
-  
+  const ffmpeg = createFFmpeg({
+    corePath: "https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js"
+  });
+
+  const loadFFmpeg = async () => {
+    if (!ffmpeg.isLoaded()) {
+      await ffmpeg.load();
+    }
+  };
+  loadFFmpeg();
+}, []);
 
   const [selectedFile, setSelectedFile] = useState(null); //creates variable and leaves it empty (null)
   const [saveFile, setSaveFile] = useState(null);
