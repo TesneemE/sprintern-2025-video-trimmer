@@ -21,11 +21,11 @@ function App() {
   //   };
   //   loadFFmpeg();
   // }, []);
-  useEffect(() => {
-  if (videoMeta.duration !== undefined) {
-    console.log("Duration is available:", videoMeta.duration);
-  }
-}, [videoMeta.duration]); // Runs only when duration exists
+//   useEffect(() => {
+//   if (videoMeta.duration !== undefined) {
+//     console.log("Duration is available:", videoMeta.duration);
+//   }
+// }, [videoMeta.duration]); // Runs only when duration exists
 
   useEffect(() => {
   const ffmpeg = createFFmpeg({
