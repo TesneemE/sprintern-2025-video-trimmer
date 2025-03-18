@@ -68,6 +68,12 @@ function App() {
   const [showTrim, setShowTrim] = useState(false);
   const videoRef = useRef(null);
   
+const handleSeek = () => {
+  if (videoRef.current) {
+    const newTrimStart = (videoRef.current.currentTime / videoMeta.duration) * 100; // Convert to percentage
+    setTrimStart(newTrimStart);
+  }
+};  
 
   //set file for upload
   const handleFileChange = (e) => {             //function that stores the file
@@ -635,8 +641,16 @@ function App() {
           <h2 className="original-video-tag">Original Video:</h2>
 
           <div className="original-video-box">
-            <video
-            className='uploaded-video' ref={videoRef} src={selectedFile} controls onLoadedMetadata={handleMetaDataTrim} onTimeUpdate={handleTimeUpdate}/>
+            // <video
+            // className='uploaded-video' ref={videoRef} src={selectedFile} controls onLoadedMetadata={handleMetaDataTrim} onTimeUpdate={handleTimeUpdate}/>
+      <video
+  ref={videoRef}
+  src={selectedFile}
+  controls
+  onLoadedMetadata={handleMetaDataTrim} onTimeUpdate={handleTimeUpdate}
+  onSeeking={handleSeek}  // Fires when user manually seeks
+  onSeeked={handleSeek}   // Ensures final position is updated
+/>
           </div>
 
           </div>
