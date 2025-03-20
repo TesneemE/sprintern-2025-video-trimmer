@@ -7,8 +7,8 @@ Sprintern 2025 Project
 Yeni Bautista, Fiona Chang, Tesneem Essa, Amaya Mangual, and Angela Zhang
 
 ## Video Clipping App with 3 Modes:
-30-Sec Clips. 
-Slider-Based Trimming 
+30-Sec Clips <br>
+Slider-Based Trimming <br>
 Time-Stamp Cutting
 
 
